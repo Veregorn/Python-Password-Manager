@@ -1,6 +1,7 @@
 from tkinter import *
 import math
 from tkmacosx import Button
+from tkinter import messagebox
 
 # ---------------------------- CONSTANTS ------------------------------- #
 WHITE = "#ffffff"
@@ -12,28 +13,39 @@ FONT_NAME = "Courier"
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
+# This save function is flexible because you could pass it a variable number of fields
 def save(*entries):
     # Create a line var
     line = ""
 
     # Loop the arguments and add them to my var with the separator
     for i, field in enumerate(entries):
+        # Test if some field is empty, if yes, then inform and break the function
+        if len(field.get()) == 0:
+            messagebox.showerror(title="Ooops", message="Please, fill all the fields")
+            return
         if i < len(entries) - 1:
             line += field.get() + " | " # If not last add the separator
         else:
             line += field.get() # If last, not separator added
-        # Finally, delete the content of the Entry
-        field.delete(0, END)
-        # If is the email, rewrite it
-        if i == 0:
-            field.insert(0, "rjbarco@gmail.com")
 
     # Finally add an "end of line"
     line += "\n"
 
-    # Write the line to the file (append mode to add the line at the end of the file)
-    with open('data.txt', 'a') as file:
-        file.write(line)
+    # Ask the user if he/she want to confirm the operation
+    is_ok = messagebox.askokcancel(title="Information", message=f"These are the details entered: \n {line}\nIs it ok to save?")
+
+    if is_ok:
+        # Write the line to the file (append mode to add the line at the end of the file)
+        with open('data.txt', 'a') as file:
+            file.write(line)
+        # Finally, delete the content of each Entry
+        for i, field in enumerate(entries):
+            field.delete(0, END)
+            # Rewrite email field with the default value
+            if i == 0:
+                field.insert(0, "rjbarco@gmail.com")
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Create the App window
