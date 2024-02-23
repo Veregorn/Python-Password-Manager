@@ -1,16 +1,48 @@
 from tkinter import *
-import math
+from random import randint, choices, shuffle
 from tkmacosx import Button
 from tkinter import messagebox
+import pyperclip
 
 # ---------------------------- CONSTANTS ------------------------------- #
 WHITE = "#ffffff"
+BLACK = "#000000"
 BACKGROUND = "#EDE9D0"
 BLUE = "#03BEBF"
 FONT_COLOR = "#620000"
 FONT_NAME = "Courier"
+LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+SYMBOLS = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+# Function that generates a random password with 8-10 letters, 2-4 symbols and 2-4 numbers
+def generate_password():
+    global password_entry
+
+    # Password will have an aleatory number of characters
+    nr_letters = randint(8, 10)
+    nr_symbols = randint(2, 4)
+    nr_numbers = randint(2, 4)
+
+    # Selecting random picks from every list
+    password_list = []
+    password_list = choices(LETTERS, k=nr_letters)
+    password_list += choices(SYMBOLS, k=nr_symbols)
+    password_list += choices(NUMBERS, k=nr_numbers)
+
+    # Shuffles the list
+    shuffle(password_list)
+
+    # From list to string
+    password = "".join(password_list)
+
+    # Edit the field
+    password_entry.insert(0, password)
+
+    # Copy the password to the clipboard
+    pyperclip.copy(password)
+
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 # This save function is flexible because you could pass it a variable number of fields
@@ -79,22 +111,22 @@ password_label.grid(column=0, row=2)
 
 # Create an entry for the website
 website = StringVar()
-website_entry = Entry(textvariable=website, width=35, highlightbackground=BACKGROUND, background=WHITE)
+website_entry = Entry(textvariable=website, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
 website_entry.grid(column=1, row=4, pady=10)
 
 # Create an entry for the email/username
 username = StringVar()
-username_entry = Entry(textvariable=username, width=35, highlightbackground=BACKGROUND, background=WHITE)
+username_entry = Entry(textvariable=username, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
 username_entry.insert(0, "rjbarco@gmail.com")
 username_entry.grid(column=1, row=1)
 
 # Create an entry for the password
 password = StringVar()
-password_entry = Entry(textvariable=password, width=35, highlightbackground=BACKGROUND, background=WHITE)
+password_entry = Entry(textvariable=password, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
 password_entry.grid(column=1, row=2, pady=10)
 
 # Create a button to generate a new password
-password_button = Button(text="Generate Password", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'))
+password_button = Button(text="Generate Password", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=generate_password)
 password_button.grid(column=1, row=3, pady=10)
 
 # Create a button to save data in file
