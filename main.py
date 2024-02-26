@@ -3,6 +3,7 @@ from random import randint, choices, shuffle
 from tkmacosx import Button
 from tkinter import messagebox
 import pyperclip
+import json
 
 # ---------------------------- CONSTANTS ------------------------------- #
 WHITE = "#ffffff"
@@ -46,38 +47,44 @@ def generate_password():
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 # This save function is flexible because you could pass it a variable number of fields
-def save(*entries):
-    # Create a line var
-    line = ""
+def save():
+    
+    # Get the data we need
+    website = website_entry.get()
+    username = username_entry.get()
+    password = password_entry.get()
 
-    # Loop the arguments and add them to my var with the separator
-    for i, field in enumerate(entries):
-        # Test if some field is empty, if yes, then inform and break the function
-        if len(field.get()) == 0:
-            messagebox.showerror(title="Ooops", message="Please, fill all the fields")
-            return
-        if i < len(entries) - 1:
-            line += field.get() + " | " # If not last add the separator
-        else:
-            line += field.get() # If last, not separator added
-
-    # Finally add an "end of line"
-    line += "\n"
+    # Test if some field is empty, if yes, then inform and break the function
+    if len(website) == 0 or len(username) == 0 or len(password) == 0:
+        messagebox.showerror(title="Ooops", message="Please, fill all the fields")
+        return
+    else: # Create the new data dictionary
+        new_data = {
+            website: {
+                "username": username,
+                "password": password
+            }
+        }
 
     # Ask the user if he/she want to confirm the operation
-    is_ok = messagebox.askokcancel(title="Information", message=f"These are the details entered: \n {line}\nIs it ok to save?")
+    is_ok = messagebox.askokcancel(title="Information", message=f"These are the details entered: \nWebsite: {website}\nUsername: {username}\nPassword: {password}\nIs it ok to save?")
 
     if is_ok:
-        # Write the line to the file (append mode to add the line at the end of the file)
-        with open('data.txt', 'a') as file:
-            file.write(line)
-        # Finally, delete the content of each Entry
-        for i, field in enumerate(entries):
-            field.delete(0, END)
-            # Rewrite email field with the default value
-            if i == 0:
-                field.insert(0, "rjbarco@gmail.com")
+        # Open an read existing json file (open it in read mode)
+        with open('data.json', 'r') as file:
+            # Reading old data
+            data = json.load(file)
+            # Updating old data with new data
+            data.update(new_data)
 
+        with open('data.json', 'w') as file:
+            json.dump(data, file, indent=4) # So the info is indented in the file (easy readable)
+        
+        # Finally, delete the content of each Entry and set username to default email
+        website_entry.delete(0, END)
+        username_entry.delete(0, END)
+        username_entry.insert(0, "rjbarco@gmail.com")
+        password_entry.delete(0, END)
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Create the App window
@@ -130,8 +137,7 @@ password_button = Button(text="Generate Password", width=330, highlightbackgroun
 password_button.grid(column=1, row=3, pady=10)
 
 # Create a button to save data in file
-# We are using lambda because otherwise we can't pass parameters to a command button function
-add_button = Button(text="Add", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=lambda: save(username_entry, password_entry, website_entry))
+add_button = Button(text="Add", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=save)
 add_button.grid(column=1, row=5, columnspan=2)
 
 
