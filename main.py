@@ -91,8 +91,23 @@ def save():
             password_entry.delete(0, END)
 
 # ---------------------------- SEARCH FUNCTION ------------------------------- #
-def search():
-    pass
+def find_password():
+    # Get the data we need
+    website = website_entry.get()
+
+    # Try to open the file where data is saved
+    try:
+        with open('data.json', 'r') as file:
+            # Read data
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found.")
+    else:
+        if website in data:
+            entry = data[website]
+            messagebox.showinfo(title="Information", message=f"This is the data saved for the website {website}:\nUsername: {entry['username']}\nPassword: {entry['password']}")
+        else:
+            messagebox.showinfo(title="Information", message=f"No details for {website} exists.")
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Create the App window
@@ -149,7 +164,7 @@ add_button = Button(text="Add", width=150, highlightbackground=BACKGROUND, backg
 add_button.grid(column=1, row=5, padx=10)
 
 # Create a button to search if is there any info related what user has typed into 'Website' field
-search_button = Button(text="Search", width=150, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=search)
+search_button = Button(text="Search", width=150, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=find_password)
 search_button.grid(column=2, row=5, padx=10)
 
 
