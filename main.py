@@ -70,21 +70,29 @@ def save():
     is_ok = messagebox.askokcancel(title="Information", message=f"These are the details entered: \nWebsite: {website}\nUsername: {username}\nPassword: {password}\nIs it ok to save?")
 
     if is_ok:
-        # Open an read existing json file (open it in read mode)
-        with open('data.json', 'r') as file:
-            # Reading old data
-            data = json.load(file)
+        try:
+            # Open an read existing json file (open it in read mode)
+            with open('data.json', 'r') as file:
+                # Reading old data
+                data = json.load(file)
+        except FileNotFoundError: # If file doesn't exist, create it and write new data
+            with open('data.json', 'w') as file:
+                json.dump(new_data, file, indent=4) # So the info is indented in the file (easy readable)
+        else:
             # Updating old data with new data
             data.update(new_data)
+            with open('data.json', 'w') as file:
+                json.dump(data, file, indent=4) # So the info is indented in the file (easy readable)
+        finally:
+            # Finally, delete the content of each Entry and set username to default email
+            website_entry.delete(0, END)
+            username_entry.delete(0, END)
+            username_entry.insert(0, "rjbarco@gmail.com")
+            password_entry.delete(0, END)
 
-        with open('data.json', 'w') as file:
-            json.dump(data, file, indent=4) # So the info is indented in the file (easy readable)
-        
-        # Finally, delete the content of each Entry and set username to default email
-        website_entry.delete(0, END)
-        username_entry.delete(0, END)
-        username_entry.insert(0, "rjbarco@gmail.com")
-        password_entry.delete(0, END)
+# ---------------------------- SEARCH FUNCTION ------------------------------- #
+def search():
+    pass
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Create the App window
@@ -119,27 +127,30 @@ password_label.grid(column=0, row=2)
 # Create an entry for the website
 website = StringVar()
 website_entry = Entry(textvariable=website, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
-website_entry.grid(column=1, row=4, pady=10)
+website_entry.grid(column=1, row=4, pady=10, columnspan=2)
 
 # Create an entry for the email/username
 username = StringVar()
 username_entry = Entry(textvariable=username, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
 username_entry.insert(0, "rjbarco@gmail.com")
-username_entry.grid(column=1, row=1)
+username_entry.grid(column=1, row=1, columnspan=2)
 
 # Create an entry for the password
 password = StringVar()
 password_entry = Entry(textvariable=password, width=35, highlightbackground=BACKGROUND, background=WHITE, fg=BLACK)
-password_entry.grid(column=1, row=2, pady=10)
+password_entry.grid(column=1, row=2, pady=10, columnspan=2)
 
 # Create a button to generate a new password
-password_button = Button(text="Generate Password", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=generate_password)
-password_button.grid(column=1, row=3, pady=10)
+password_button = Button(text="Generate Password", width=320, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=generate_password)
+password_button.grid(column=1, row=3, pady=10, columnspan=2)
 
 # Create a button to save data in file
-add_button = Button(text="Add", width=330, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=save)
-add_button.grid(column=1, row=5, columnspan=2)
+add_button = Button(text="Add", width=150, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=save)
+add_button.grid(column=1, row=5, padx=10)
 
+# Create a button to search if is there any info related what user has typed into 'Website' field
+search_button = Button(text="Search", width=150, highlightbackground=BACKGROUND, background=BLUE, fg=WHITE, border=0, font=(FONT_NAME, 16, 'bold'), command=search)
+search_button.grid(column=2, row=5, padx=10)
 
 
 
